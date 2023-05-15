@@ -7,13 +7,9 @@ import { EntityNotSaved } from '../errors/entityNotSaved';
 @Injectable()
 export class CategoryService {
   async addCategory(categoryDto: CategoryReq) {
-    const category = await Category.findOneBy({
-      id: categoryDto.id,
-    });
+    const category = new Category();
 
-    if (!category) {
-      throw new EntityNotFound('Category');
-    }
+    category.title = categoryDto.title;
 
     try {
       await category.save();

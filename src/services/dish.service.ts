@@ -10,11 +10,11 @@ export class DishService {
   async addDish(dishDto: DishReq) {
     const dish = new Dish();
     const category = await Category.findOneBy({
-      id: dishDto.category,
+      id: dishDto.category_id,
     });
 
     if (!category) {
-      throw new EntityNotFound('Category');
+      throw new EntityNotFound('Category Not Found');
     }
 
     dish.title = dishDto.title;
@@ -27,7 +27,7 @@ export class DishService {
       await dish.save();
     } catch (e) {
       console.log(e);
-      throw new EntityNotSaved('Dish');
+      throw new EntityNotSaved('Dish Not Saved');
     }
   }
 
@@ -37,7 +37,7 @@ export class DishService {
     });
 
     if (!dish) {
-      throw new EntityNotFound('Dish');
+      throw new EntityNotFound('Dish Not Found');
     }
 
     await dish.remove();

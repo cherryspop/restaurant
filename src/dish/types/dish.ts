@@ -5,7 +5,7 @@ export class DishReq {
 
   @IsInt()
   @IsNotEmpty()
-  category: number;
+  category_id: number;
 
   @IsString()
   @IsNotEmpty()
