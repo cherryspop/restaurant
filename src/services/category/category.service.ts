@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CategoryReq } from '../dish/types/category';
-import { Category } from '../models/category.entity';
-import { EntityNotFound } from '../errors/entitiyNotFound';
-import { EntityNotSaved } from '../errors/entityNotSaved';
+import { CategoryReq } from '../../common/types/category';
+import { Category } from '../../common/models/category.entity';
+import { EntityNotFound } from '../../common/errors/entitiyNotFound';
+import { EntityNotSaved } from '../../common/errors/entityNotSaved';
 
 @Injectable()
 export class CategoryService {

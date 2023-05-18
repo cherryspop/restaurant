@@ -5,7 +5,7 @@ import {
   TableForeignKey,
 } from 'typeorm';
 import { AppDataSource } from '../config/data-source';
-import { Dish } from '../src/models/dish.entity';
+import { Dish } from '../src/common/models/dish.entity';
 
 export class Dishes1683893613629 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {

@@ -7,9 +7,9 @@ import {
   ParseIntPipe,
   Post,
 } from '@nestjs/common';
-import { CategoryService } from '../services/category.service';
-import { ValidationPipe } from '../pipes/validation.pipe';
-import { CategoryReq } from '../dish/types/category';
+import { CategoryService } from '../../services/category/category.service';
+import { ValidationPipe } from '../../common/pipes/validation.pipe';
+import { CategoryReq } from '../../common/types/category';
 
 @Controller('category')
 export class CategoryController {

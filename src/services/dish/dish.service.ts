@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { DishReq } from '../dish/types/dish';
-import { Dish } from '../models/dish.entity';
-import { Category } from '../models/category.entity';
-import { EntityNotFound } from '../errors/entitiyNotFound';
-import { EntityNotSaved } from '../errors/entityNotSaved';
+import { DishReq } from '../../common/types/dish';
+import { Dish } from '../../common/models/dish.entity';
+import { Category } from '../../common/models/category.entity';
+import { EntityNotFound } from '../../common/errors/entitiyNotFound';
+import { EntityNotSaved } from '../../common/errors/entityNotSaved';
 
 @Injectable()
 export class DishService {

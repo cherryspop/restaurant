@@ -7,9 +7,9 @@ import {
   Param,
   ParseIntPipe,
 } from '@nestjs/common';
-import { DishReq } from '../dish/types/dish';
-import { DishService } from '../services/dish.service';
-import { ValidationPipe } from '../pipes/validation.pipe';
+import { DishReq } from '../../common/types/dish';
+import { DishService } from '../../services/dish/dish.service';
+import { ValidationPipe } from '../../common/pipes/validation.pipe';
 
 @Controller('dish')
 export class DishController {
