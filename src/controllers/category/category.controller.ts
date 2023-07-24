@@ -20,12 +20,12 @@ export class CategoryController {
     await this.categoryService.addCategory(category);
   }
 
-  @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number) {
-    await this.categoryService.removeCategory(id);
+  @Delete(':title')
+  async remove(@Param('title') title: string) {
+    await this.categoryService.removeCategory(title);
   }
   @Get()
-  findAll(): string {
-    return 'All categories?';
+  async fetchCategories() {
+    return await this.categoryService.fetchCategories();
   }
 }

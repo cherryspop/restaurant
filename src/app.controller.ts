@@ -1,12 +1,13 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
+import { DishService } from './services/dish/dish.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly dishService: DishService) {}
 
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  async getMenu() {
+    return await this.dishService.getAllDish();
   }
 }

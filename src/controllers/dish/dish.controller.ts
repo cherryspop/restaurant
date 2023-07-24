@@ -6,10 +6,12 @@ import {
   Delete,
   Param,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { DishReq } from '../../common/types/dish';
 import { DishService } from '../../services/dish/dish.service';
 import { ValidationPipe } from '../../common/pipes/validation.pipe';
+import { AuthGuard } from '../../services/auth/auth.guard';
 
 @Controller('dish')
 export class DishController {

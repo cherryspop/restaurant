@@ -18,7 +18,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "migration:create": "npx typeorm-ts-node-commonjs migration:create migrations/dishes",
+    "migration:create": "npx typeorm-ts-node-commonjs migration:create",
     "migration:run": "typeorm-ts-node-commonjs migration:run -d config/data-source.ts",
     "migration:revert": "typeorm-ts-node-commonjs migration:revert -d config/data-source.ts"
   },
@@ -34,6 +34,7 @@
     "class-validator": "^0.14.0",
     "cli": "^1.0.1",
     "commands": "^0.0.7",
+    "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",
     "pg": "^8.10.0",
     "reflect-metadata": "^0.1.13",

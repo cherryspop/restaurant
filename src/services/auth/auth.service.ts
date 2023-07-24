@@ -1,38 +1,82 @@
 import { Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { UserReq } from '../../common/types/user';
-import { JwtModule, JwtService } from '@nestjs/jwt';
-import { CryptoService } from '../crypto/crypto.service';
-import { hashNotValidated } from '../../common/errors/hashNotValidated';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { UserReq } from '../../common/types/user';
+import { AuthFailed } from '../../common/errors/authFailed';
+import { compare } from 'bcrypt';
+import assert from 'node:assert';
+import { CryptoService } from '../crypto/crypto.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
-    private cryptoService: CryptoService,
     private configService: ConfigService,
+    private cryptoService: CryptoService,
   ) {}
 
-  async signIn(userDto: UserReq) {
-    const user = await this.userService.findUser(userDto);
+  async signUp(userDto: UserReq) {
+    await this.userService.findUserByName(userDto.username, false);
 
-    const hashValidation = await this.cryptoService.validateHash(
+    const userHashedPassword = await this.cryptoService.hashData(
       userDto.password,
-      user.password,
     );
 
-    if (!hashValidation) {
-      throw new hashNotValidated('Hash Validation Failed');
-    }
+    const newUser = await this.userService.create(
+      userDto.username,
+      userHashedPassword,
+    );
 
-    const payload = { username: user.username, sub: user.id };
+    const tokens = await this.getTokens(newUser.id, newUser.username);
+    return tokens;
+  }
+
+  async signIn(userDto: UserReq) {
+    const user = await this.userService.findUserByName(userDto.username);
+
+    const isHashValidated = await compare(userDto.password, user.password);
+
+    assert(isHashValidated, new AuthFailed('Unauthorized'));
+
+    const tokens = await this.getTokens(user.id, user.username);
+    return tokens;
+  }
+
+  async getTokens(userId: number, username: string) {
+    const payload = {
+      sub: userId,
+      username,
+    };
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(payload, {
+        secret: this.configService.get<string>('JWT_SECRET'),
+        expiresIn: '15m',
+      }),
+      this.jwtService.signAsync(payload, {
+        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+        expiresIn: '1d',
+      }),
+    ]);
 
     return {
-      access_token: await this.jwtService.signAsync(payload, {
-        secret: this.configService.get('JWT_SECRET'),
-      }),
+      accessToken,
+      refreshToken,
     };
+  }
+
+  async refreshAccessToken(refreshToken: string) {
+    // const { refreshToken } = refreshTokenDto;refreshTokenDto
+    const validation = await this.jwtService.verifyAsync(refreshToken, {
+      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+    });
+
+    assert(validation, new AuthFailed('Auth Failed'));
+
+    const payload = this.jwtService.decode(refreshToken, { json: true });
+
+    const tokens = await this.getTokens(payload['sub'], payload['username']);
+    return tokens.accessToken;
   }
 }

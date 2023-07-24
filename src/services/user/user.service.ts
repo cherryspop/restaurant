@@ -1,46 +1,43 @@
 import { Injectable } from '@nestjs/common';
 import { UserReq } from '../../common/types/user';
-import { EntityNotFound } from '../../common/errors/entitiyNotFound';
 import { User } from '../../common/models/user.entity';
-import { UserAlreadyExists } from '../../common/errors/userAlreadyExists';
 import { CryptoService } from '../crypto/crypto.service';
+import { AuthFailed } from '../../common/errors/authFailed';
+import assert from 'node:assert';
 import { EntityNotSaved } from '../../common/errors/entityNotSaved';
 
 @Injectable()
 export class UserService {
   constructor(private cryptoService: CryptoService) {}
-  async findUser(userDto: UserReq) {
-    const user = await User.findOneBy({
-      username: userDto.username,
-    });
+  async findUserByName(username: string, shouldExist = true) {
+    const user = await User.findOneBy({ username });
 
-    if (!user) {
-      throw new EntityNotFound('User Not Found');
-    }
+    shouldExist
+      ? assert(user, new AuthFailed('Auth Failed'))
+      : assert(!user, new AuthFailed('Auth Failed'));
 
     return user;
   }
 
-  async addUser(userDto: UserReq) {
-    const userExists = await User.findOneBy({
-      username: userDto.username,
-    });
+  async findUserById(id: number, shouldExist = true) {
+    const user = await User.findOneBy({ id });
 
-    if (userExists) {
-      throw new UserAlreadyExists('User Already Exists');
-    }
+    shouldExist
+      ? assert(user, new AuthFailed('Auth Failed'))
+      : assert(!user, new AuthFailed('Auth Failed'));
 
-    const user = new User();
+    return user;
+  }
 
-    const userHashedPassword = await this.cryptoService.hashPassword(
-      userDto.password,
-    );
+  async create(username: string, password: string) {
+    await this.findUserByName(username, false);
 
-    user.username = userDto.username;
-    user.password = userHashedPassword;
+    const createdUser = new User();
+    createdUser.username = username;
+    createdUser.password = password;
 
     try {
-      await user.save();
+      return await createdUser.save();
     } catch (e) {
       console.log(e);
       throw new EntityNotSaved('User Not Saved');

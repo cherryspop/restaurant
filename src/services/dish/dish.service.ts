@@ -4,18 +4,25 @@ import { Dish } from '../../common/models/dish.entity';
 import { Category } from '../../common/models/category.entity';
 import { EntityNotFound } from '../../common/errors/entitiyNotFound';
 import { EntityNotSaved } from '../../common/errors/entityNotSaved';
+import assert from 'node:assert';
 
 @Injectable()
 export class DishService {
+  async getAllDish() {
+    const dishes = await Dish.find({
+      relations: { category: true },
+      order: { id: -1 },
+    });
+    return dishes;
+  }
+
   async addDish(dishDto: DishReq) {
     const dish = new Dish();
     const category = await Category.findOneBy({
       id: dishDto.category_id,
     });
 
-    if (!category) {
-      throw new EntityNotFound('Category Not Found');
-    }
+    assert(category, new EntityNotFound('Category Not Found'));
 
     dish.title = dishDto.title;
     dish.photo = dishDto.photo;
@@ -31,6 +38,11 @@ export class DishService {
     }
   }
 
+  // async editDish(dishDto: DishReq) {
+  //   const dish = new Dish();
+  //
+  // }
+  //todo editDish service
   async removeDish(id) {
     const dish = await Dish.findOneBy({
       id: id,
